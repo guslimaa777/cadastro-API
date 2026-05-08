@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Cadastro - Testador</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        header h1 { font-size: 2em; margin-bottom: 5px; }
+        header p { opacity: 0.9; font-size: 0.95em; }
+        .content { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+        .section { padding: 30px; border-right: 1px solid #e0e0e0; }
+        .section:last-child { border-right: none; }
+        .section h2 { color: #667eea; margin-bottom: 20px; font-size: 1.5em; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        input, select, textarea { 
+            width: 100%; padding: 10px; border: 1px solid #ddd; 
+            border-radius: 6px; font-size: 14px; font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        .btn {
+            display: inline-block; padding: 10px 20px; background: #667eea;
+            color: white; border: none; border-radius: 6px; cursor: pointer;
+            font-weight: 600; margin-right: 10px; margin-top: 10px;
+        }
+        .btn:hover { background: #764ba2; }
+        .btn-secondary { background: #666; }
+        .btn-secondary:hover { background: #555; }
+        .response { 
+            background: #f5f5f5; padding: 15px; border-radius: 6px; 
+            margin-top: 15px; font-family: 'Courier New', monospace;
+            white-space: pre-wrap; word-break: break-word; max-height: 300px;
+            overflow-y: auto; font-size: 12px;
+            border: 1px solid #ddd;
+        }
+        .response.success { background: #e8f5e9; border-color: #4caf50; }
+        .response.error { background: #ffebee; border-color: #f44336; }
+        .table-list { margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #f5f5f5; padding: 10px; text-align: left; font-weight: 600; border-bottom: 2px solid #ddd; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f9f9f9; }
+        .badge {
+            display: inline-block; padding: 4px 8px; border-radius: 4px;
+            font-size: 12px; font-weight: 600; color: white;
+        }
+        .badge-get { background: #2196F3; }
+        .badge-post { background: #4CAF50; }
+        .badge-put { background: #FF9800; }
+        .badge-delete { background: #f44336; }
+        .action-btns button { padding: 5px 10px; font-size: 12px; margin-right: 5px; }
+        @media (max-width: 768px) {
+            .content { grid-template-columns: 1fr; }
+            .section { border-right: none; border-bottom: 1px solid #e0e0e0; }
+            .section:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🗄️ API de Cadastro - Testador</h1>
+            <p>Interface para testar a API RESTful de Cadastro</p>
+        </header>
+        <div class="content">
+            <!-- REQUISIÇÕES -->
+            <div class="section">
+                <h2>📬 Requisições</h2>
+                
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #eee;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">Criar Cadastro</h3>
+                    <div class="form-group">
+                        <label>Nome:</label>
+                        <input type="text" id="nome" placeholder="Ex: João Silva">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="email" placeholder="Ex: joao@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone:</label>
+                        <input type="text" id="telefone" placeholder="Ex: (11)98765-4321">
+                    </div>
+                    <button class="btn" onclick="criarCadastro()">POST - Criar</button>
+                    <div id="responseCriar" class="response" style="display:none;"></div>
+                </div>
+
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #eee;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">Obter Cadastro</h3>
+                    <div class="form-group">
+                        <label>ID:</label>
+                        <input type="number" id="idGet" placeholder="Ex: 1" value="1">
+                    </div>
+                    <button class="btn" onclick="obterCadastro()">GET - Obter por ID</button>
+                    <div id="responseObter" class="response" style="display:none;"></div>
+                </div>
+
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #eee;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">Atualizar Cadastro</h3>
+                    <div class="form-group">
+                        <label>ID:</label>
+                        <input type="number" id="idUpdate" placeholder="Ex: 1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Novo Nome:</label>
+                        <input type="text" id="nomeUpdate" placeholder="Deixe vazio para não alterar">
+                    </div>
+                    <div class="form-group">
+                        <label>Novo Email:</label>
+                        <input type="email" id="emailUpdate" placeholder="Deixe vazio para não alterar">
+                    </div>
+                    <button class="btn" onclick="atualizarCadastro()">PUT - Atualizar</button>
+                    <div id="responseAtualizar" class="response" style="display:none;"></div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">Deletar Cadastro</h3>
+                    <div class="form-group">
+                        <label>ID:</label>
+                        <input type="number" id="idDelete" placeholder="Ex: 1" value="1">
+                    </div>
+                    <button class="btn btn-secondary" onclick="deletarCadastro()">DELETE - Deletar</button>
+                    <div id="responseDeletar" class="response" style="display:none;"></div>
+                </div>
+            </div>
+
+            <!-- RESPOSTAS -->
+            <div class="section">
+                <h2>📊 Resposta & Dados</h2>
+                
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #eee;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">Todos os Cadastros</h3>
+                    <button class="btn" onclick="obterTodos()">GET - Listar Todos</button>
+                    <div id="responseTodos" class="response" style="display:none;"></div>
+                    <div id="tabelaCadastros" class="table-list"></div>
+                </div>
+
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px solid #eee;">
+                    <h3 style="color: #667eea; margin-bottom: 10px;">Buscar por Email</h3>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="text" id="emailBusca" placeholder="Ex: joao">
+                    </div>
+                    <button class="btn" onclick="buscarEmail()">GET - Buscar</button>
+                    <div id="responseBusca" class="response" style="display:none;"></div>
+                </div>
+
+                <div>
+                    <h3 style="color: #667eea; margin-bottom: 10px;">Estatísticas</h3>
+                    <button class="btn" onclick="obterStats()">GET - Stats</button>
+                    <div id="responseStats" class="response" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:3000';
+
+        function mostrarResposta(elemento, dados, sucesso = true) {
+            elemento.textContent = JSON.stringify(dados, null, 2);
+            elemento.className = 'response ' + (sucesso ? 'success' : 'error');
+            elemento.style.display = 'block';
+        }
+
+        async function criarCadastro() {
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const telefone = document.getElementById('telefone').value;
+            
+            if (!nome || !email) {
+                alert('Nome e email são obrigatórios!');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/api/cadastros`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, email, telefone })
+                });
+                const dados = await res.json();
+                mostrarResposta(document.getElementById('responseCriar'), dados, res.ok);
+                if (res.ok) {
+                    document.getElementById('nome').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('telefone').value = '';
+                    obterTodos();
+                }
+            } catch (erro) {
+                mostrarResposta(document.getElementById('responseCriar'), { erro: erro.message }, false);
+            }
+        }
+
+        async function obterTodos() {
+            try {
+                const res = await fetch(`${API}/api/cadastros`);
+                const dados = await res.json();
+                mostrarResposta(document.getElementById('responseTodos'), dados, res.ok);
+                
+                if (res.ok && dados.dados) {
+                    let tabela = '<table><th>ID</th><th>Nome</th><th>Email</th><th>Telefone</th><th>Ações</th>';
+                    dados.dados.forEach(c => {
+                        tabela += `<tr>
+                            <td>${c.id}</td>
+                            <td>${c.nome}</td>
+                            <td>${c.email}</td>
+                            <td>${c.telefone || '-'}</td>
+                            <td class="action-btns">
+                                <button class="btn" style="padding:5px 10px;font-size:12px" onclick="preencherUpdate(${c.id}, '${c.nome}', '${c.email}')">Editar</button>
+                            </td>
+                        </tr>`;
+                    });
+                    tabela += '</table>';
+                    document.getElementById('tabelaCadastros').innerHTML = tabela;
+                }
+            } catch (erro) {
+                mostrarResposta(document.getElementById('responseTodos'), { erro: erro.message }, false);
+            }
+        }
+
+        async function obterCadastro() {
+            const id = document.getElementById('idGet').value;
+            if (!id) { alert('ID obrigatório!'); return; }
+
+            try {
+                const res = await fetch(`${API}/api/cadastros/${id}`);
+                const dados = await res.json();
+                mostrarResposta(document.getElementById('responseObter'), dados, res.ok);
+            } catch (erro) {
+                mostrarResposta(document.getElementById('responseObter'), { erro: erro.message }, false);
+            }
+        }
+
+        async function atualizarCadastro() {
+            const id = document.getElementById('idUpdate').value;
+            const nome = document.getElementById('nomeUpdate').value;
+            const email = document.getElementById('emailUpdate').value;
+            
+            if (!id) { alert('ID obrigatório!'); return; }
+
+            try {
+                const res = await fetch(`${API}/api/cadastros/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, email })
+                });
+                const dados = await res.json();
+                mostrarResposta(document.getElementById('responseAtualizar'), dados, res.ok);
+                if (res.ok) {
+                    document.getElementById('nomeUpdate').value = '';
+                    document.getElementById('emailUpdate').value = '';
+                    obterTodos();
+                }
+            } catch (erro) {
+                mostrarResposta(document.getElementById('responseAtualizar'), { erro: erro.message }, false);
+            }
+        }
+
+        async function deletarCadastro() {
+            const id = document.getElementById('idDelete').value;
+            if (!id) { alert('ID obrigatório!'); return; }
+            if (!confirm('Tem certeza que deseja deletar?')) return;
+
+            try {
+                const res = await fetch(`${API}/api/cadastros/${id}`, { method: 'DELETE' });
+                const dados = await res.json();
+                mostrarResposta(document.getElementById('responseDeletar'), dados, res.ok);
+                if (res.ok) obterTodos();
+            } catch (erro) {
+                mostrarResposta(document.getElementById('responseDeletar'), { erro: erro.message }, false);
+            }
+        }
+
+        async function buscarEmail() {
+            const email = document.getElementById('emailBusca').value;
+            if (!email) { alert('Email obrigatório!'); return; }
+
+            try {
+                const res = await fetch(`${API}/api/cadastros/buscar/email/${email}`);
+                const dados = await res.json();
+                mostrarResposta(document.getElementById('responseBusca'), dados, res.ok);
+            } catch (erro) {
+                mostrarResposta(document.getElementById('responseBusca'), { erro: erro.message }, false);
+            }
+        }
+
+        async function obterStats() {
+            try {
+                const res = await fetch(`${API}/api/stats`);
+                const dados = await res.json();
+                mostrarResposta(document.getElementById('responseStats'), dados, res.ok);
+            } catch (erro) {
+                mostrarResposta(document.getElementById('responseStats'), { erro: erro.message }, false);
+            }
+        }
+
+        function preencherUpdate(id, nome, email) {
+            document.getElementById('idUpdate').value = id;
+            document.getElementById('nomeUpdate').value = nome;
+            document.getElementById('emailUpdate').value = email;
+            document.querySelector('.section:first-child').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Carregar cadastros ao iniciar
+        window.addEventListener('load', () => {
+            obterTodos();
+            obterStats();
+        });
+    </script>
+</body>
+</html>
