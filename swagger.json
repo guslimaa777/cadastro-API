@@ -1,0 +1,330 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Cadastro",
+    "description": "API RESTful para gerenciar cadastros de pessoas",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Suporte",
+      "email": "suporte@example.com"
+    },
+    "license": {
+      "name": "ISC"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor Local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Cadastros",
+      "description": "Operações com cadastros"
+    },
+    {
+      "name": "Estatísticas",
+      "description": "Informações gerais"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Informações da API",
+        "responses": {
+          "200": {
+            "description": "Sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensagem": { "type": "string" },
+                    "versao": { "type": "string" },
+                    "documentacao": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cadastros": {
+      "get": {
+        "tags": ["Cadastros"],
+        "summary": "Obter todos os cadastros",
+        "responses": {
+          "200": {
+            "description": "Lista de cadastros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sucesso": { "type": "boolean" },
+                    "total": { "type": "integer" },
+                    "dados": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Cadastro" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Cadastros"],
+        "summary": "Criar novo cadastro",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CadastroInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cadastro criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sucesso": { "type": "boolean" },
+                    "mensagem": { "type": "string" },
+                    "dados": { "$ref": "#/components/schemas/Cadastro" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro na requisição"
+          }
+        }
+      }
+    },
+    "/api/cadastros/{id}": {
+      "get": {
+        "tags": ["Cadastros"],
+        "summary": "Obter cadastro por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cadastro encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sucesso": { "type": "boolean" },
+                    "dados": { "$ref": "#/components/schemas/Cadastro" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cadastro não encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Cadastros"],
+        "summary": "Atualizar cadastro",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CadastroInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cadastro atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sucesso": { "type": "boolean" },
+                    "mensagem": { "type": "string" },
+                    "dados": { "$ref": "#/components/schemas/Cadastro" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro na requisição"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Cadastros"],
+        "summary": "Deletar cadastro",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cadastro deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sucesso": { "type": "boolean" },
+                    "mensagem": { "type": "string" },
+                    "dados": { "$ref": "#/components/schemas/Cadastro" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cadastro não encontrado"
+          }
+        }
+      }
+    },
+    "/api/cadastros/buscar/email/{email}": {
+      "get": {
+        "tags": ["Cadastros"],
+        "summary": "Buscar cadastros por email",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cadastros encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sucesso": { "type": "boolean" },
+                    "total": { "type": "integer" },
+                    "dados": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Cadastro" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "tags": ["Estatísticas"],
+        "summary": "Obter estatísticas",
+        "responses": {
+          "200": {
+            "description": "Estatísticas da API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalCadastros": { "type": "integer" },
+                    "dataAcesso": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cadastro": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID único do cadastro"
+          },
+          "nome": {
+            "type": "string",
+            "description": "Nome completo"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Endereço de email"
+          },
+          "telefone": {
+            "type": "string",
+            "description": "Número de telefone"
+          },
+          "dataCriacao": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data de criação"
+          },
+          "dataAtualizacao": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Data da última atualização"
+          }
+        },
+        "required": ["id", "nome", "email"]
+      },
+      "CadastroInput": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "Nome completo"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Endereço de email"
+          },
+          "telefone": {
+            "type": "string",
+            "description": "Número de telefone"
+          }
+        },
+        "required": ["nome", "email"]
+      }
+    }
+  }
+}
